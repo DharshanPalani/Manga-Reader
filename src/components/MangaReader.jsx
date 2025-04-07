@@ -3,18 +3,20 @@ import { useParams, useNavigate, Link } from "react-router-dom";
 import axios from "axios";
 import API from "../utils/apiConfig.js";
 
-export default function MangaReader() {
-  const { chapter } = useParams();
-  const navigate = useNavigate();
-  const [pages, setPages] = useState([]);
-  const [chapters, setChapters] = useState([]);
-  const [pageIndex, setPageIndex] = useState(0);
-  const [menuOpen, setMenuOpen] = useState(false);
-  const [progress, setProgress] = useState(0);
+function MangaReader() {
+  const { chapter } = useParams(); // This grabs chapter ID from the url.
+  const navigate = useNavigate(); // This is used to switch between chapters
+  const [pages, setPages] = useState([]); // This grabs and holds all the images for the chapters to be shown
+  const [chapters, setChapters] = useState([]); // This holds the list of all chapter names
+  const [pageIndex, setPageIndex] = useState(0); // This tracks the page the user is on, storing the index of it
+  const [menuOpen, setMenuOpen] = useState(false); // This Toggles the right menu (Can be accessed when clicking in the middle)
+  const [progress, setProgress] = useState(0); // This handles the chapter progress bar value (if finished 5 out of 100 pages it's 5%)
 
+  // This grab all chapter names when component loads
   useEffect(() => {
     axios.get(`${API}/api/chapters`)
       .then(res => {
+        // This handles the sorting algorithm and stores them in order.
         const sorted = res.data.sort((a, b) => {
           const numA = parseFloat(a.replace(/[^\d.]/g, ""));
           const numB = parseFloat(b.replace(/[^\d.]/g, ""));
@@ -24,14 +26,16 @@ export default function MangaReader() {
       });
   }, []);
 
+  // when the chapter changes, fetch its pages
   useEffect(() => {
     axios.get(`${API}/api/chapters/${chapter}`)
       .then(res => {
         setPages(res.data);
-        setPageIndex(0);
+        setPageIndex(0); // reset to first page when switching chapters
       });
   }, [chapter]);
 
+  // This handles the updating the progress bar when reading.
   useEffect(() => {
     if (pages.length > 0) {
       const newProgress = ((pageIndex + 1) / pages.length) * 100;
@@ -39,14 +43,18 @@ export default function MangaReader() {
     }
   }, [pageIndex, pages]);
 
+  // This 3 lines of code gets the current chapter we are reading (currentIndex)... 
+  // ...the previous chapter (prevChapter) and the next chapter (nextChapter)
   const currentIndex = chapters.indexOf(chapter);
   const prevChapter = currentIndex > 0 ? chapters[currentIndex - 1] : null;
   const nextChapter = currentIndex < chapters.length - 1 ? chapters[currentIndex + 1] : null;
 
+  // handle chapter nav backwards
   const goToPrevChapter = () => {
     if (prevChapter) navigate(`/chapter/${prevChapter}`);
   };
 
+  // This forwards nav and update highest read chapter in local storage
   const goToNextChapter = () => {
     const currentNumber = parseInt(chapter.replace(/[^\d]/g, ""));
     const highestRead = parseInt(localStorage.getItem("highestRead")) || 0;
@@ -56,22 +64,25 @@ export default function MangaReader() {
     if (nextChapter) navigate(`/chapter/${nextChapter}`);
   };
 
+  // clicking right side or tapping screen advances page
   const goNextPage = () => {
     if (pageIndex < pages.length - 1) {
       setPageIndex((prev) => prev + 1);
     } else {
-      goToNextChapter();
+      goToNextChapter(); // if last page, go to next chapter
     }
   };
 
+  // clicking left side or swipe left goes back
   const goPrevPage = () => {
     if (pageIndex > 0) {
       setPageIndex((prev) => prev - 1);
     } else {
-      goToPrevChapter();
+      goToPrevChapter(); // if first page, go to previous chapter
     }
   };
 
+  // save current spot in cookies just in case we wanna come back later
   useEffect(() => {
     document.cookie = `lastChapter=${chapter}`;
     document.cookie = `lastPage=${pageIndex}`;
@@ -79,6 +90,8 @@ export default function MangaReader() {
 
   return (
     <div className="relative h-screen w-screen overflow-hidden bg-black">
+
+      {/* show current page image if it exists */}
       {pages[pageIndex] ? (
         <img
           src={`${API}/manga/${chapter}/${pages[pageIndex]}`}
@@ -92,10 +105,12 @@ export default function MangaReader() {
         </div>
       )}
 
+      {/* invisible click zones for prev/menu/next actions */}
       <div className="absolute top-0 left-0 h-full w-[40%] z-10" onClick={goPrevPage} />
       <div className="absolute top-0 left-[40%] h-full w-[20%] z-10" onClick={() => setMenuOpen(!menuOpen)} />
       <div className="absolute top-0 right-0 h-full w-[40%] z-10" onClick={goNextPage} />
 
+      {/* slide-out side menu on right */}
       {menuOpen && (
         <div className="absolute top-0 right-0 h-full w-[300px] bg-zinc-900 text-white p-4 shadow-xl z-20">
           <Link to="/" className="text-orange-400 text-lg font-bold block mb-4">⟵ Back</Link>
@@ -116,6 +131,7 @@ export default function MangaReader() {
             >Next</button>
           </div>
 
+          {/* dropdown to jump to a specific chapter */}
           <select
             className="mt-4 w-full bg-[#292929] text-white p-2 rounded border border-orange-500"
             value={chapter}
@@ -133,6 +149,7 @@ export default function MangaReader() {
         </div>
       )}
 
+      {/* Bottom progress bar overlayed on the image */}
       <div className="absolute bottom-0 left-0 w-full h-1 z-20">
         <div className="w-full h-full">
           <div
@@ -145,3 +162,6 @@ export default function MangaReader() {
     </div>
   );
 }
+
+
+export default MangaReader;
