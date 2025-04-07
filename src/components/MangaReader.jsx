@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import axios from "axios";
-import API from "../utils/apiConfig.js"
+import API from "../utils/apiConfig.js";
 
 export default function MangaReader() {
   const { chapter } = useParams();
@@ -10,6 +10,7 @@ export default function MangaReader() {
   const [chapters, setChapters] = useState([]);
   const [pageIndex, setPageIndex] = useState(0);
   const [menuOpen, setMenuOpen] = useState(false);
+  const [progress, setProgress] = useState(0);
 
   useEffect(() => {
     axios.get(`${API}/api/chapters`)
@@ -30,6 +31,13 @@ export default function MangaReader() {
         setPageIndex(0);
       });
   }, [chapter]);
+
+  useEffect(() => {
+    if (pages.length > 0) {
+      const newProgress = ((pageIndex + 1) / pages.length) * 100;
+      setProgress(newProgress);
+    }
+  }, [pageIndex, pages]);
 
   const currentIndex = chapters.indexOf(chapter);
   const prevChapter = currentIndex > 0 ? chapters[currentIndex - 1] : null;
@@ -124,6 +132,16 @@ export default function MangaReader() {
           >Close Menu</button>
         </div>
       )}
+
+      <div className="absolute bottom-0 left-0 w-full h-1 z-20">
+        <div className="w-full h-full">
+          <div
+            className="absolute top-0 left-0 h-full bg-orange-500 transition-all duration-200"
+            style={{ width: `${progress}%` }}
+          />
+        </div>
+      </div>
+
     </div>
   );
 }
