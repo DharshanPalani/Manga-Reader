@@ -1,7 +1,7 @@
 import React from "react";
 import { Routes, Route } from "react-router-dom";
 import ChapterList from "./components/ChapterList.jsx";
-import MangaReader from "./components/MangaReader.jsx";
+import MangaReader from "./components/MangaReader/MangaReader.jsx";
 
 const App = () => {
   return (
