@@ -1,8 +1,15 @@
-import React from "react";
+import { useEffect } from "react";
 import API from "../../utils/apiConfig";
 import NavigationZones from "./NavigationZones";
 
-function ScrollRead({ chapter, pages, menuOpen, setMenuOpen, goNextPage, goPrevPage }) {
+
+function ScrollRead({ chapter, pages, menuOpen, setMenuOpen, goNextPage, goPrevPage}) {
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [chapter, pages]);
+  
+
   return (
     <div className="relative">
       <NavigationZones
@@ -10,7 +17,7 @@ function ScrollRead({ chapter, pages, menuOpen, setMenuOpen, goNextPage, goPrevP
         goNextPage={goNextPage}
         goPrevPage={goPrevPage}
       />
-      <div className="flex flex-col items-center gap-6 py-6 px-4">
+      <div className="flex flex-col items-center ">
         {pages.map((page, i) => (
           <img
             key={i}

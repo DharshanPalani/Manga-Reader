@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 
 import useChapters from "../../hooks/useChapters";
@@ -30,16 +30,40 @@ function MangaReader() {
   const [progress, setProgress] = useState(0);
 
   const [scrollMode, setScrollMode] = useState(false);
+  const scrollContainerRef = useRef(null);
 
   useEffect(() => {
     setPageIndex(0); // Reset to first page on chapter change
   }, [chapter]);
 
   useEffect(() => {
-    if (pages.length > 0) {
-      setProgress(((pageIndex + 1) / pages.length) * 100);
+    let scrollHandler;
+  
+    if (scrollMode) {
+      scrollHandler = () => {
+        const scrollTop = window.scrollY;
+        const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+        const scrollProgress = docHeight > 0 ? (scrollTop / docHeight) * 100 : 0;
+        setProgress(scrollProgress);
+      };
+  
+      window.addEventListener("scroll", scrollHandler);
+      // This is called only once to avoid lag
+      scrollHandler();
+    } else {
+      if (pages.length > 0) {
+        const pageProgress = ((pageIndex + 1) / pages.length) * 100;
+        setProgress(pageProgress);
+      }
     }
-  }, [pageIndex, pages]);
+  
+    return () => {
+      if (scrollMode && scrollHandler) {
+        window.removeEventListener("scroll", scrollHandler);
+      }
+    };
+  }, [scrollMode, pageIndex, pages]);
+  
 
   useEffect(() => {
     document.cookie = `lastChapter=${chapter}`;
@@ -64,7 +88,6 @@ function MangaReader() {
 
   return (
   <div>
-    {/* Pagination read component */}
 
     {scrollMode ?  (
         <ScrollRead 
@@ -72,9 +95,9 @@ function MangaReader() {
         pages={pages}
         menuOpen={menuOpen}
         setMenuOpen={setMenuOpen}
+        goToNextChapter={goToNextChapter}
         />
       ): (
-      
       <PaginationRead 
         chapter={chapter} 
         pages={pages} 
@@ -106,6 +129,18 @@ function MangaReader() {
 
       {/* Progress bar */}
       <ProgressBar progress={progress} />
+
+      {scrollMode && (
+        <div className="flex justify-center my-12">
+        <button 
+          className="cursor-pointer bg-orange-600 hover:bg-orange-700 text-white text-center py-3 px-16 rounded shadow-lg transition-all"
+          onClick={goToNextChapter}
+        >
+          Next Chapter
+        </button>
+      </div>
+      
+      )}
   </div>
   );
 }

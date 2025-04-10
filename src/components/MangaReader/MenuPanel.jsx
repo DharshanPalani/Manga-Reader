@@ -15,7 +15,7 @@ function MenuPanel({
   setScrollMode
 }) {
   return (
-    <div className="fixed top-0 right-0 h-full w-[300px] bg-zinc-900 text-white p-4 shadow-xl z-30 overflow-y-auto">
+    <div className="fixed top-0 right-0 h-full w-[280px] bg-zinc-900 text-white p-4 shadow-xl z-30 overflow-y-auto">
       <Link to="/" className="text-orange-400 text-lg font-bold block mb-4">
         ⟵ Back
       </Link>

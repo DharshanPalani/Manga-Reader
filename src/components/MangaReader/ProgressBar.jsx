@@ -4,7 +4,7 @@ function ProgressBar({ progress }) {
       <div className="w-full h-full">
         {/* Filled portion of the progress bar */}
         <div
-          className="fixed top-0 left-0 h-full bg-orange-500 transition-all duration-200"
+          className="absolute top-0 left-0 h-full bg-orange-500 transition-all duration-200"
           style={{ width: `${progress}%` }}
         />
       </div>
