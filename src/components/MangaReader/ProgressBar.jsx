@@ -1,6 +1,6 @@
 function ProgressBar({ progress }) {
   return (
-    <div className="absolute bottom-0 left-0 w-full h-1 z-20">
+    <div className="fixed bottom-0 left-0 w-full h-1 z-20">
       <div className="w-full h-full">
         {/* Filled portion of the progress bar */}
         <div
