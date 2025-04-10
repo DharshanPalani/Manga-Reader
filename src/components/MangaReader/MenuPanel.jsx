@@ -11,9 +11,11 @@ function MenuPanel({
   goToNextChapter,
   setMenuOpen,
   navigate,
+  scrollMode,
+  setScrollMode
 }) {
   return (
-    <div className="absolute top-0 right-0 h-full w-[300px] bg-zinc-900 text-white p-4 shadow-xl z-20">
+    <div className="fixed top-0 right-0 h-full w-[300px] bg-zinc-900 text-white p-4 shadow-xl z-30 overflow-y-auto">
       <Link to="/" className="text-orange-400 text-lg font-bold block mb-4">
         ⟵ Back
       </Link>
@@ -51,6 +53,16 @@ function MenuPanel({
           </option>
         ))}
       </select>
+
+
+      {/* Mode change between pagination and scroll */}
+      <button
+        className="mt-4 bg-orange-500 hover:bg-orange-600 px-4 py-2 rounded w-full"
+        onClick={() => setScrollMode((prev) => !prev)}
+      >
+        {scrollMode ? "Switch to Paginated View" : "Switch to Scroll View"}
+      </button>
+
 
       <button
         className="mt-6 bg-white text-black px-4 py-2 rounded w-full"

@@ -9,6 +9,7 @@ import MenuPanel from "./MenuPanel";
 import ProgressBar from "./ProgressBar";
 
 import PaginationRead from "./PaginationRead";
+import ScrollRead from "./ScrollRead";
 
 function MangaReader() {
   const { chapter } = useParams();
@@ -27,6 +28,8 @@ function MangaReader() {
   const [pageIndex, setPageIndex] = useState(0);
   const [menuOpen, setMenuOpen] = useState(false);
   const [progress, setProgress] = useState(0);
+
+  const [scrollMode, setScrollMode] = useState(false);
 
   useEffect(() => {
     setPageIndex(0); // Reset to first page on chapter change
@@ -62,16 +65,27 @@ function MangaReader() {
   return (
   <div>
     {/* Pagination read component */}
-    <PaginationRead 
-    chapter={chapter} 
-    pages={pages} 
-    pageIndex={pageIndex} 
-    goPrevPage={goPrevPage} 
-    goNextPage={goNextPage} 
-    menuOpen={menuOpen}
-    setMenuOpen={setMenuOpen}
-      />
-    
+
+    {scrollMode ?  (
+        <ScrollRead 
+        chapter={chapter}
+        pages={pages}
+        menuOpen={menuOpen}
+        setMenuOpen={setMenuOpen}
+        />
+      ): (
+      
+      <PaginationRead 
+        chapter={chapter} 
+        pages={pages} 
+        pageIndex={pageIndex} 
+        goPrevPage={goPrevPage} 
+        goNextPage={goNextPage} 
+        menuOpen={menuOpen}
+        setMenuOpen={setMenuOpen}
+        />
+      )}
+        
     {/* Menu section */}
     {menuOpen && (
       <MenuPanel
@@ -85,6 +99,8 @@ function MangaReader() {
       goToNextChapter={goToNextChapter}
       setMenuOpen={setMenuOpen}
       navigate={navigate}
+      scrollMode={scrollMode}
+      setScrollMode={setScrollMode}
             />
       )}
 
