@@ -1,12 +1,14 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
+
 import useChapters from "../../hooks/useChapters";
 import useChapterPages from "../../hooks/useChapterPages";
 import useChapterNavigation from "../../hooks/useChapterNavigation";
-import ChapterImage from "./ChapterImage";
-import NavigationZones from "./NavigationZones";
+
 import MenuPanel from "./MenuPanel";
 import ProgressBar from "./ProgressBar";
+
+import PaginationRead from "./PaginationRead";
 
 function MangaReader() {
   const { chapter } = useParams();
@@ -58,29 +60,37 @@ function MangaReader() {
   };
 
   return (
-    <div className="relative h-screen w-screen overflow-hidden bg-black">
-      <ChapterImage chapter={chapter} page={pages[pageIndex]} total={pages.length} />
-      <NavigationZones
-        goPrevPage={goPrevPage}
-        toggleMenu={() => setMenuOpen(!menuOpen)}
-        goNextPage={goNextPage}
+  <div>
+    {/* Pagination read component */}
+    <PaginationRead 
+    chapter={chapter} 
+    pages={pages} 
+    pageIndex={pageIndex} 
+    goPrevPage={goPrevPage} 
+    goNextPage={goNextPage} 
+    menuOpen={menuOpen}
+    setMenuOpen={setMenuOpen}
       />
-      {menuOpen && (
-        <MenuPanel
-          chapter={chapter}
-          chapters={chapters}
-          pageIndex={pageIndex}
-          pages={pages}
-          prevChapter={prevChapter}
-          nextChapter={nextChapter}
-          goToPrevChapter={goToPrevChapter}
-          goToNextChapter={goToNextChapter}
-          setMenuOpen={setMenuOpen}
-          navigate={navigate}
-        />
+    
+    {/* Menu section */}
+    {menuOpen && (
+      <MenuPanel
+      chapter={chapter}
+      chapters={chapters}
+      pageIndex={pageIndex}
+      pages={pages}
+      prevChapter={prevChapter}
+      nextChapter={nextChapter}
+      goToPrevChapter={goToPrevChapter}
+      goToNextChapter={goToNextChapter}
+      setMenuOpen={setMenuOpen}
+      navigate={navigate}
+            />
       )}
+
+      {/* Progress bar */}
       <ProgressBar progress={progress} />
-    </div>
+  </div>
   );
 }
 
